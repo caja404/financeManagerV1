@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime      @default(now())
+  transactions Transaction[]
+  budgets      Budget[]
+  investments  Investment[]
+  notes        Note[]
+  creditCards  CreditCard[]
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String
+  date        DateTime
+  description String
+  amount      Float
+  category    String
+  type        String   // "income" | "expense"
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Budget {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  amount      Float
+  month       Int
+  year        Int
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Investment {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  amount    Float
+  category  String
+  date      DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CreditCard {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  dueDate     DateTime
+  minimumDue  Float
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
