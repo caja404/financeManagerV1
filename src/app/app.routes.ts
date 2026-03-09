@@ -1,11 +1,34 @@
 import { Routes } from '@angular/router';
-import { Dashboard } from './dashboard/dashboard';
-import { Login } from './auth/login/login';
-import { Register } from './auth/register/register';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', component: Dashboard },
-  { path: 'login', component: Login },
-  { path: 'register', component: Register },
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'dashboard',
+  },
+  {
+    path: 'dashboard',
+    canActivate: [authGuard],
+    loadComponent: () => import('./dashboard/dashboard').then((m) => m.Dashboard),
+  },
+  {
+    path: 'transactions',
+    canActivate: [authGuard],
+    loadComponent: () => import('./transaction/transaction').then((m) => m.Transaction),
+  },
+  {
+    path: 'reports',
+    canActivate: [authGuard],
+    loadComponent: () => import('./reports/reports').then((m) => m.Reports),
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./auth/login/login').then((m) => m.Login),
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./auth/register/register').then((m) => m.Register),
+  },
   { path: '**', redirectTo: '' }
 ];

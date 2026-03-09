@@ -1,1 +1,93 @@
-<p>transaction works!</p>
+<section class="transactions-page">
+	<header class="page-header">
+		<div>
+			<h1>Transactions</h1>
+			<p>Track income and expenses with real backend persistence.</p>
+		</div>
+	</header>
+
+	@if (errorMessage()) {
+		<div class="status-banner error">
+			{{ errorMessage() }}
+		</div>
+	}
+
+	<div class="transactions-grid">
+		<form class="transaction-form" [formGroup]="form" (ngSubmit)="submit()">
+			<h2>Add transaction</h2>
+
+			<label>
+				<span>Date</span>
+				<input type="date" formControlName="date" />
+			</label>
+
+			<label>
+				<span>Description</span>
+				<input type="text" formControlName="description" placeholder="Salary, groceries, rent..." />
+			</label>
+
+			<div class="form-row">
+				<label>
+					<span>Amount</span>
+					<input type="number" min="0.01" step="0.01" formControlName="amount" />
+				</label>
+
+				<label>
+					<span>Type</span>
+					<select formControlName="type">
+						<option value="expense">Expense</option>
+						<option value="income">Income</option>
+					</select>
+				</label>
+			</div>
+
+			<label>
+				<span>Category</span>
+				<input type="text" formControlName="category" placeholder="Food, Salary, Utilities..." />
+			</label>
+
+			<button type="submit" class="submit-btn" [disabled]="isSubmitting()">
+				@if (!isSubmitting()) {
+					<span>Save transaction</span>
+				} @else {
+					<span>Saving...</span>
+				}
+			</button>
+		</form>
+
+		<section class="transaction-list-card">
+			<div class="list-header">
+				<h2>Recent activity</h2>
+				<button type="button" class="ghost-btn" (click)="loadTransactions()">Refresh</button>
+			</div>
+
+			@if (isLoading()) {
+				<p class="empty-copy">Loading transactions...</p>
+			} @else {
+				<div class="transaction-list">
+					@for (transaction of orderedTransactions(); track transaction.id) {
+						<article class="transaction-row">
+							<div>
+								<p class="transaction-description">{{ transaction.description }}</p>
+								<p class="transaction-meta">{{ transaction.category }} • {{ formatDate(transaction.date) }}</p>
+							</div>
+
+							<div class="transaction-actions">
+								<span
+									class="transaction-amount"
+									[class.income]="transaction.type === 'income'"
+									[class.expense]="transaction.type === 'expense'"
+								>
+									{{ transaction.type === 'income' ? '+' : '-' }}{{ formatCurrency(transaction.amount) }}
+								</span>
+								<button type="button" class="delete-btn" (click)="remove(transaction.id)">Delete</button>
+							</div>
+						</article>
+					} @empty {
+						<p class="empty-copy">No transactions yet. Add your first one.</p>
+					}
+				</div>
+			}
+		</section>
+	</div>
+</section>

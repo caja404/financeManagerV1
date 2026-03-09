@@ -1,59 +1,90 @@
 # FinanceMonitor
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.2.
+FinanceMonitor is now set up as a full-stack MVP:
+- Angular 21 frontend
+- Express + Prisma + PostgreSQL backend in [backend-production/README.md](backend-production/README.md)
+- JWT auth
+- Persistent transaction storage
+- Dashboard and reports from live data
 
-## Development server
+## Local development
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Frontend:
 
 ```bash
-ng generate component component-name
+npm install
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Backend:
 
 ```bash
-ng generate --help
+cd backend-production
+npm install
+cp .env.example .env
+npm run prisma:generate
+npm run prisma:migrate
+npm run dev
 ```
 
-## Building
+Frontend runs on `http://localhost:4200`
+Backend runs on `http://localhost:4000`
 
-To build the project run:
+## Production deployment
+
+The repo now includes a full production compose stack:
+- [docker-compose.production.yml](docker-compose.production.yml)
+- [Dockerfile](Dockerfile) for the frontend
+- [deploy/nginx/default.conf](deploy/nginx/default.conf) for SPA serving and `/api` reverse proxy
+- [backend-production/Dockerfile](backend-production/Dockerfile) for the API
+- [.env.production.example](.env.production.example) for production secrets
+
+### Deploy with Docker
+
+1. Copy [.env.production.example](.env.production.example) to `.env.production`
+2. Replace every placeholder secret
+3. Run:
 
 ```bash
-ng build
+docker compose --env-file .env.production -f docker-compose.production.yml up -d --build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+4. Apply database migrations:
 
 ```bash
-ng test
+docker compose --env-file .env.production -f docker-compose.production.yml exec api npm run prisma:migrate
 ```
 
-## Running end-to-end tests
+5. Open your app on port configured by `FRONTEND_PORT`
 
-For end-to-end (e2e) testing, run:
+## MVP status
+
+Ready now:
+- Auth
+- Transactions CRUD
+- Dashboard
+- Reports
+- Containerized deployment path
+
+Still backlog:
+- Budgets frontend
+- Investments, notes, credit cards modules
+- Password reset and email verification
+- Automated tests for critical flows
+- Monitoring/alerting and backups
+- HTTPS/domain/reverse proxy at infrastructure edge
+
+## Build validation
+
+Frontend:
 
 ```bash
-ng e2e
+npm run build
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Backend:
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+cd backend-production
+npm run build
+```

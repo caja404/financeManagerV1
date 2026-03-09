@@ -1,1 +1,48 @@
-<p>reports works!</p>
+<section class="reports-page">
+	<header class="reports-header">
+		<div>
+			<h1>Reports</h1>
+			<p>Quick commercial MVP analytics from persisted transaction data.</p>
+		</div>
+		<button type="button" class="refresh-btn" (click)="load()">Refresh</button>
+	</header>
+
+	@if (errorMessage()) {
+		<div class="report-banner">{{ errorMessage() }}</div>
+	}
+
+	@if (isLoading()) {
+		<p class="report-copy">Loading reports...</p>
+	} @else {
+		<div class="report-grid">
+			<article class="report-card">
+				<span>Total income</span>
+				<strong>{{ formatCurrency(totals().income) }}</strong>
+			</article>
+
+			<article class="report-card">
+				<span>Total expenses</span>
+				<strong>{{ formatCurrency(totals().expense) }}</strong>
+			</article>
+
+			<article class="report-card">
+				<span>Net cashflow</span>
+				<strong>{{ formatCurrency(netCashflow()) }}</strong>
+			</article>
+		</div>
+
+		<section class="report-table-card">
+			<h2>Top categories</h2>
+			<div class="category-list">
+				@for (item of topCategories(); track item.category) {
+					<div class="category-row">
+						<span>{{ item.category }}</span>
+						<strong>{{ formatCurrency(item.amount) }}</strong>
+					</div>
+				} @empty {
+					<p class="report-copy">No category data available yet.</p>
+				}
+			</div>
+		</section>
+	}
+</section>
