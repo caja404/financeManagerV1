@@ -38,6 +38,8 @@ RUN addgroup -g 1001 -S nodejs && \
 
 WORKDIR /app
 
+RUN mkdir -p /app/logs && chown -R nodejs:nodejs /app
+
 # Copy built application
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
